@@ -1,37 +1,18 @@
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import Link from "next/link";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
-export function ContextTooltip({
+const ContextTooltip: React.FC<{ text: string; context: string }> = ({
+  text,
   context,
-  href,
 }: {
+  text: string;
   context: string;
-  href?: string;
-}) {
+}) => {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="outline" aria-label="Show context information">
-            Hover for context
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent className="bg-white text-black rounded shadow-lg p-2">
-          <p>{context}</p>
-          {href && (
-            <Link href={href} passHref>
-              <p className="text-sm text-zinc-600">{href}</p>
-            </Link>
-          )}
-          <small className="text-gray-500">Additional info can go here.</small>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger className="context-text">{text}</TooltipTrigger>
+      <TooltipContent className="max-w-sm p-4 rounded-md shadow-lg bg-white text-gray-700">
+        {context}
+      </TooltipContent>
+    </Tooltip>
   );
-}
+};

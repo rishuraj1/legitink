@@ -18,7 +18,11 @@ export default function HeroSection() {
         </h1>
         <p
           className={`text-gradient-to-r tracking-wide md:text-xl rounded-md from-gray-100 via-gray-200 to-zinc-300 font-semibold transform translate-x-[20%] -translate-y-10 whitespace-nowrap px-4`}
-          style={{ wordSpacing: "0.2rem", fontFamily: "Caveat", fontSize: "1.5rem" }}
+          style={{
+            wordSpacing: "0.2rem",
+            fontFamily: "Caveat",
+            fontSize: "1.5rem",
+          }}
         >
           Provides you the space to ink your sayings and thoughts...
         </p>
