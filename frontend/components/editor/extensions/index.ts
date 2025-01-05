@@ -4,7 +4,7 @@ import { Mark } from "@tiptap/core";
 declare module "@tiptap/core" {
   interface Commands {
     setContextText: {
-      setContextText: (context: string) => void;
+      setContextText: (context: string) => any;
     };
   }
 }

@@ -258,7 +258,7 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
               .focus()
               .extendMarkRange("contextText") // Extend the mark to the selected text range
               .setContextText(contextValue) // Set the context on the selected text
-              .run();
+              .run() as void;
 
             // Move the cursor to the end of the context-text marked area
             const endPosition = editor.state.selection.to;

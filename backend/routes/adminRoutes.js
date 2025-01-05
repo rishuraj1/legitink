@@ -9,5 +9,4 @@ router.get("/", (req, res) => {
 
 router.post("/upload-words", uploadDictionaryWords);
 
-
 export default router;
