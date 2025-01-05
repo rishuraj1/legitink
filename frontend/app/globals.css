@@ -73,6 +73,10 @@ body {
     display: inline-block;
   }
 
+  .context-text {
+    @apply text-blue-500 px-1 cursor-pointer underline;
+  }
+
   blockquote {
     @apply border-l-[4px] dark:border-[#E8E8EA] border-gray-300 bg-[#E8E8EA] p-2 my-2 italic text-foreground dark:bg-[#242535] rounded-lg;
   }

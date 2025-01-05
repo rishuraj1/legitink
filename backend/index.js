@@ -25,7 +25,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/posts", postRoutes);
 app.use("/api/v1/upload-to-s3", uploadRoutes);
 app.use("/api/v1/admin", adminRoutes);
-app.use("/api/v1/dictionary", dictionaryRoutes)
+app.use("/api/v1/dictionary", dictionaryRoutes);
 
 app.get("/", (req, res) => {
   res.send("LegalInk API");

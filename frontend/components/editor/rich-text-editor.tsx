@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { fontFamilies } from "@/lib/utils";
@@ -36,6 +36,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { uploadArticleImageToS3 } from "@/actions/post";
+import ContextDialog from "./context-dialog";
+import { ContextText } from "./extensions";
 
 const RichTextEditor = ({
   value,
@@ -52,6 +54,7 @@ const RichTextEditor = ({
       },
     },
     extensions: [
+      ContextText,
       StarterKit.configure({
         orderedList: { HTMLAttributes: { class: "list-decimal pl-4" } },
         bulletList: { HTMLAttributes: { class: "list-disc pl-4" } },
@@ -120,6 +123,10 @@ const RichTextEditor = ({
 
 const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
   const [font, setFont] = React.useState<string | undefined>("Aa");
+  const [isContextDialogOpen, setContextDialogOpen] = useState<boolean>(false);
+  const [selectedText, setSelectedText] = useState<string | null>(null);
+  const [context, setContext] = useState<string | null>(null);
+
   const handleFontFamilyChange = (value: string) => {
     editor.chain().focus().setFontFamily(value).run();
   };
@@ -221,7 +228,49 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+        <Separator orientation="vertical" className="w-[1px] h-8" />
+        <button
+          type="button"
+          onClick={() => {
+            const selection = editor.state.doc.textBetween(
+              editor.state.selection.from,
+              editor.state.selection.to,
+            );
+            if (selection) {
+              setSelectedText(selection);
+              setContextDialogOpen(true);
+            } else {
+              alert("No text selected!");
+            }
+          }}
+        >
+          Add Context
+        </button>
       </div>
+      <ContextDialog
+        isOpen={isContextDialogOpen}
+        onClose={() => setContextDialogOpen(false)}
+        onSave={(contextValue) => {
+          if (selectedText) {
+            // Apply the contextText mark only to the selected range
+            editor
+              .chain()
+              .focus()
+              .extendMarkRange("contextText") // Extend the mark to the selected text range
+              .setContextText(contextValue) // Set the context on the selected text
+              .run() as void;
+
+            // Move the cursor to the end of the context-text marked area
+            const endPosition = editor.state.selection.to;
+            editor.chain().focus().setTextSelection(endPosition).run();
+
+            // Close the dialog and reset states
+            setContextDialogOpen(false);
+            setContext("");
+            setSelectedText("");
+          }
+        }}
+      />
     </div>
   );
 };

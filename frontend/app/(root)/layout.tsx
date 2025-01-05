@@ -1,5 +1,6 @@
 import NavBar from "@/components/nav-bar";
 import ToggleTheme from "@/components/toggle-theme";
+import { Suspense } from "react";
 
 const Layout = async ({
   children,
@@ -7,7 +8,7 @@ const Layout = async ({
   return (
     <main className="font-work-sans relative min-h-screen w-full">
       <NavBar />
-      {children}
+      <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
       <div className="fixed left-7 bottom-9">
         <ToggleTheme />
       </div>

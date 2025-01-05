@@ -25,14 +25,16 @@ export default async function NavBar() {
       </div>
 
       {/* Navigation Links */}
-      <nav className="hidden md:flex gap-5 w-full sm:w-1/3 justify-center">
+      <nav className="hidden md:flex gap-5 w-full sm:w-1/3 justify-center rounded-full bg-gray-900">
         {routes?.map((route) => (
           <Link
             key={route?.href}
             href={route?.href}
             className="ease-in-out duration-75 text-[#3B3C4A] dark:text-[#A1A1AA] hover:text-black dark:hover:text-white"
           >
-            <span className="font-semibold leading-8">{route?.name}</span>
+            <span className="font-semibold text-sm leading-8">
+              {route?.name}
+            </span>
           </Link>
         ))}
       </nav>

@@ -10,7 +10,7 @@ export default async function DictionaryPage({
 }: {
   searchParams: Promise<{ query?: string; page?: string; limit?: string }>;
 }) {
-  const searchparams = (await searchParams);
+  const searchparams = await searchParams;
   const query = searchparams?.query || "";
   const page = parseInt(searchparams?.page as string) || 1;
   const limit = parseInt(searchparams?.limit as string) || 10;
@@ -43,7 +43,11 @@ export default async function DictionaryPage({
       </div>
 
       {dictionary && dictionary.length > 0 ? (
-        <DictionaryTable data={dictionary} currPage={page} itemsPerPage={limit} />
+        <DictionaryTable
+          data={dictionary}
+          currPage={page}
+          itemsPerPage={limit}
+        />
       ) : (
         <h2 className="text-lg text-gray-500">No results found</h2>
       )}

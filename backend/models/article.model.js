@@ -67,7 +67,7 @@ const articleSchema = new mongoose.Schema(
     //   },
     // ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const Article =

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -68,7 +68,11 @@ export default function ArticleEditor({
     setLoading(false);
   };
 
-  const disabled = !content || !titleRef.current?.value || !subtitleRef.current?.value || loading;
+  const disabled =
+    !content ||
+    !titleRef.current?.value ||
+    !subtitleRef.current?.value ||
+    loading;
 
   return (
     <form className="flex flex-col gap-4">
@@ -106,7 +110,11 @@ export default function ArticleEditor({
       />
 
       <div className="flex justify-end">
-        <TermsDialog title="Submit" disabled={disabled} onAgree={handleSubmit} />
+        <TermsDialog
+          title="Submit"
+          disabled={disabled}
+          onAgree={handleSubmit}
+        />
       </div>
     </form>
   );
