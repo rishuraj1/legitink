@@ -6,7 +6,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 const LoadingUI = () => {
   return (
     <DotLottieReact
-      src="/assets/Animation - 1700862361305.lottie"
+      src={"/assets/Animation - 1700862361305.lottie"}
       loop
       autoplay
       width={200}

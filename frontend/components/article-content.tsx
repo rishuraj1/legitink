@@ -28,7 +28,7 @@ const ArticleContent = ({
           <Image
             src={article?.mainImage}
             alt={article?.title || "Article Image"}
-            className="rounded-lg border border-zinc-500"
+            className="rounded-lg border border-zinc-500 max-h-[500px]"
             width={800}
             height={300}
             layout="responsive"
@@ -56,11 +56,10 @@ const ArticleContent = ({
         </Link>
 
         {isAuthor && (
-          <Badge className="text-xs">
+          <Badge className="text-xs" variant={"outline"}>
             {article?.approveStatus.toUpperCase()}
           </Badge>
         )}
-        {/* Created Time */}
         {article?.createdAt && (
           <span className="text-sm text-zinc-700 dark:text-zinc-500">
             {getArticleTime(article?.createdAt)}

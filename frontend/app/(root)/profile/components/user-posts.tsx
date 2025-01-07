@@ -1,4 +1,7 @@
+"use client";
+
 import { Article } from "@/types";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import dynamic from "next/dynamic";
 
 const ArticleCard = dynamic(() => import("@/components/article-card"));
@@ -8,10 +11,20 @@ interface UserPostsProps {
 }
 
 const UserPosts = ({ posts }: UserPostsProps) => {
-  if (!posts)
+  if (posts?.length === 0)
     return (
-      <div className="flex justify-center items-center h-full w-full">
-        No posts found
+      <div className="flex flex-col justify-center items-center h-1/4 w-1/4">
+        <DotLottieReact
+          src={"/assets/postsNotFound.lottie"}
+          loop
+          autoplay
+          width={200}
+          height={200}
+          style={{ width: "250px", height: "250px" }}
+        />
+        <p className="text-center font-semibold text-xl text-zinc-500">
+          No Posts found!
+        </p>
       </div>
     );
 

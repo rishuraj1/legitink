@@ -25,7 +25,7 @@ export default async function NavBar() {
       </div>
 
       {/* Navigation Links */}
-      <nav className="hidden md:flex gap-5 w-full sm:w-1/3 justify-center rounded-full bg-gray-900">
+      <nav className="hidden md:flex gap-5 w-full sm:w-1/3 justify-center rounded-full dark:bg-gray-900 bg-zinc-200">
         {routes?.map((route) => (
           <Link
             key={route?.href}
