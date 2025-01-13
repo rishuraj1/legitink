@@ -8,6 +8,8 @@ import { Input } from "./ui/input";
 import RichTextEditor from "./editor/rich-text-editor";
 import { TermsDialog } from "./terms-dialog";
 import { createNewArticle } from "@/actions/post";
+import BibliographySection from "./editor/bibliography";
+import { Bibliography } from "@/types";
 
 export default function ArticleEditor({
   params,
@@ -20,7 +22,11 @@ export default function ArticleEditor({
   const titleRef = useRef<HTMLInputElement>(null);
   const subtitleRef = useRef<HTMLInputElement>(null);
   const mainImageRef = useRef<HTMLInputElement>(null);
-  const bibliographyRef = useRef<HTMLInputElement>(null);
+
+  const [bibliography, setBibliography] = useState<Bibliography>({
+    books: [],
+    urls: [],
+  });
   const [content, setContent] = useState("");
   const [mainImage, setMainImage] = useState<File | null>(null);
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
@@ -41,6 +47,10 @@ export default function ArticleEditor({
     setMainImagePreview(null);
   }, [mainImage]);
 
+  const handleBibliographyChange = (newBibliography: Bibliography) => {
+    setBibliography(newBibliography);
+  };
+
   // Handle form submission
   const handleSubmit = async () => {
     setLoading(true);
@@ -50,12 +60,18 @@ export default function ArticleEditor({
     const mainImage = mainImageRef.current?.files?.[0];
     // const bibliography = bibliographyRef.current?.value || "";
 
-    if (!title || !subtitle || !content || content === "<p></p>") {
+    if (
+      !title ||
+      !subtitle ||
+      !content ||
+      content === "<p></p>" ||
+      (!bibliography?.urls?.length && !bibliography?.books?.length)
+    ) {
       toast.error("All fields are required");
       return;
     }
 
-    const data = { title, subtitle, content, mainImage };
+    const data = { title, subtitle, content, mainImage, bibliography };
     console.log("Data:", data);
     const toastId = toast.loading("Saving article...");
     const error = await createNewArticle(data);
@@ -69,13 +85,22 @@ export default function ArticleEditor({
   };
 
   const disabled =
+    loading ||
     !content ||
-    !titleRef.current?.value ||
-    !subtitleRef.current?.value ||
-    loading;
+    content === "<p></p>" ||
+    !titleRef.current?.value?.trim() ||
+    !subtitleRef.current?.value?.trim() ||
+    (!bibliography?.urls?.length && !bibliography?.books?.length);
 
   return (
-    <form className="flex flex-col gap-4">
+    <form
+      id="article-editor-form"
+      className="flex flex-col gap-4"
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit();
+      }}
+    >
       <Input ref={titleRef} placeholder="Title" className="mb-2" />
 
       {/* Subtitle Input */}
@@ -100,20 +125,19 @@ export default function ArticleEditor({
         )}
       </div>
 
-      {/* Rich Text Editor */}
       <RichTextEditor value={content} onChange={handleContentChange} />
-      <Input
-        ref={bibliographyRef}
-        placeholder="Bibliography"
-        className="mb-4"
-        title="bibliography"
-      />
+
+      <div className="flex flex-col gap-4 mt-4  border-dashed border border-gray-200 dark:border-gray-700 p-6">
+        <h2 className="text-lg font-semibold">Bibliography</h2>
+        <BibliographySection onBibliographyChange={handleBibliographyChange} />
+      </div>
 
       <div className="flex justify-end">
         <TermsDialog
           title="Submit"
           disabled={disabled}
-          onAgree={handleSubmit}
+          type="submit"
+          formId="article-editor-form"
         />
       </div>
     </form>

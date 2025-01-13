@@ -3,6 +3,7 @@
 import axios from "axios";
 
 import { auth } from "@/auth";
+import { Bibliography } from "@/types";
 // import connectDb from "@/lib/db";
 // import { s3Client } from "@/lib/aws";
 
@@ -18,6 +19,7 @@ interface NewArticleProps {
   subtitle: string;
   content: string;
   mainImage?: File | null;
+  bibliography: Bibliography;
 }
 
 const createNewArticle = async ({
@@ -25,6 +27,7 @@ const createNewArticle = async ({
   subtitle,
   content,
   mainImage,
+  bibliography,
 }: NewArticleProps) => {
   try {
     const user = await auth();
@@ -32,58 +35,18 @@ const createNewArticle = async ({
       throw new Error("You need to be logged in to create a post");
     }
 
-    if (!title || !subtitle || !content || content === "<p></p>") {
+    if (
+      !title ||
+      !subtitle ||
+      !content ||
+      content === "<p></p>" ||
+      (!bibliography?.urls?.length && !bibliography?.books?.length)
+    ) {
       throw new Error("All fields are required");
     }
 
-    console.log("content:", content);
-
     const userId = user?.user?.id;
     console.log("User ID:", userId);
-
-    // check if user exists or not
-    // const existingUser = await User.findById(userId);
-    // if (!existingUser) {
-    //   throw new Error("User not found");
-    // }
-    // console.log("User found:", existingUser);
-    // console.log("Saving the article to the database...");
-    // const newArticle = await Article.create({
-    //   title,
-    //   subtitle,
-    //   content,
-    //   author: userId,
-    // });
-
-    // // Upload main image to S3
-    // if (mainImage) {
-    //   const bucketName = process.env.NEXT_PUBLIC_AWS_S3_BUCKET;
-    //   console.log("Bucket name:", bucketName);
-    //   console.log("Uploading image to S3...");
-
-    //   if (!bucketName) {
-    //     throw new Error("Bucket name is required");
-    //   }
-
-    //   const buffer = await mainImage.arrayBuffer();
-    //   const params = {
-    //     Bucket: bucketName,
-    //     Key: `articles/${newArticle._id}/${mainImage.name}`,
-    //     Body: Buffer.from(buffer),
-    //     ContentType: mainImage.type,
-    //   };
-
-    //   const data = await s3Client.send(new PutObjectCommand(params));
-    //   // console.log("Image uploaded to S3:", data);
-
-    //   if (!data) {
-    //     throw new Error("Image upload failed");
-    //   }
-    //   newArticle.mainImage = `${process.env.NEXT_PUBLIC_CLOUDFRONT_DOMAIN}/${params.Key}`;
-    //   await newArticle.save();
-    // }
-
-    // console.log("Article saved successfully");
 
     let mainImageUrl = "";
     if (mainImage) {
@@ -97,6 +60,7 @@ const createNewArticle = async ({
       content,
       mainImageUrl,
       userId,
+      bibliography,
     };
 
     const response = await axios.post(
@@ -113,7 +77,7 @@ const createNewArticle = async ({
   } catch (error) {
     const err = error as Error;
     console.error("Error creating article:", err.message);
-    return err.message; // Return error message if something goes wrong
+    return err.message;
   }
 };
 

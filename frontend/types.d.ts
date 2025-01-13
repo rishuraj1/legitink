@@ -15,6 +15,7 @@ export interface Article {
   mainImage?: string;
   createdAt: string;
   updatedAt: string;
+  bibliography: Bibliography;
 }
 
 export interface User {
@@ -51,4 +52,16 @@ export interface Dictionary {
   _id: string;
   word: string;
   meaning: string;
+}
+
+export interface Book {
+  title: string;
+  author: string;
+  year: string;
+  isbn?: string;
+}
+
+export interface Bibliography {
+  books?: Book[];
+  urls?: string[];
 }

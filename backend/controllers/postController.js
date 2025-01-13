@@ -4,7 +4,9 @@ import { Dictionary } from "../models/dictionary.model.js";
 const getPostsByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
-    const posts = await Article.find({ author: userId });
+    const posts = await Article.find({ author: userId })
+      .sort({ createdAt: -1 })
+      .populate("author");
 
     if (!posts) {
       return res.status(404).json({ message: "Posts not found" });
@@ -18,17 +20,25 @@ const getPostsByUserId = async (req, res) => {
 
 const createNewArticle = async (req, res) => {
   try {
-    const { title, subtitle, content, mainImageUrl, userId } = req.body;
-    if (!title || !subtitle || !content || !userId) {
+    const { title, subtitle, content, mainImageUrl, userId, bibliography } =
+      req.body;
+    if (
+      !title ||
+      !subtitle ||
+      !content ||
+      !userId ||
+      (!bibliography?.urls?.length && !bibliography?.books?.length)
+    ) {
       return res.status(400).json({ message: "Please fill in all fields" });
     }
 
-    const newArticle = await Article.create({
+    await Article.create({
       title: title,
       subtitle: subtitle,
       content: content,
       mainImage: mainImageUrl || "",
       author: userId,
+      bibliography,
     });
 
     res.status(201).json({ message: "Article created successfully" });

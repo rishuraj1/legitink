@@ -1,5 +1,23 @@
 import mongoose from "mongoose";
 
+const bookSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  author: {
+    type: String,
+    required: true,
+  },
+  year: {
+    type: String,
+    required: true,
+  },
+  isbn: {
+    type: String,
+  },
+});
+
 const articleSchema = new mongoose.Schema(
   {
     title: {
@@ -61,11 +79,16 @@ const articleSchema = new mongoose.Schema(
     mainImage: {
       type: String,
     },
-    // bibliography: [
-    //   {
-    //     type: String,
-    //   },
-    // ],
+    bibliography: {
+      books: {
+        type: [bookSchema],
+        default: [],
+      },
+      urls: {
+        type: [String],
+        default: [],
+      },
+    },
   },
   { timestamps: true },
 );

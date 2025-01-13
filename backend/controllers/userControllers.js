@@ -29,7 +29,9 @@ const getUserById = async (req, res) => {
 const getArticlesByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
-    const articles = await Article.find({ author: userId }).populate("author");
+    const articles = await Article.find({ author: userId })
+      .populate("author")
+      .sort({ createdAt: -1 });
 
     if (!articles) {
       return res.status(404).json({ message: "Articles not found" });

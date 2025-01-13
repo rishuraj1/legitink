@@ -12,11 +12,13 @@ import {
 export function TermsDialog({
   title,
   disabled,
-  onAgree,
+  type = "button",
+  formId,
 }: {
   title: string;
   disabled: boolean;
-  onAgree: () => void;
+  type?: "submit" | "button";
+  formId?: string;
 }) {
   return (
     <Dialog>
@@ -45,7 +47,7 @@ export function TermsDialog({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button type="button" onClick={onAgree}>
+          <Button type={type} form={formId}>
             Agree
           </Button>
         </DialogFooter>

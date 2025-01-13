@@ -2,9 +2,9 @@ import { getArticleTime } from "@/lib/utils";
 import { Article } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
-import { UserAvatar } from "./user-button";
 import TooltipDialog from "./tooltip-dialog";
-import { Badge } from "./ui/badge";
+import { UserAvatar } from "./user-button";
+import ShowBibliography from "./show-bibliography";
 
 const ArticleContent = ({
   article,
@@ -37,7 +37,6 @@ const ArticleContent = ({
           />
         </div>
       )}
-
       {/* Author and Created Time */}
       <div className="flex items-center justify-between">
         {/* Author Info */}
@@ -54,17 +53,26 @@ const ArticleContent = ({
             {article?.author?.name || "Unknown Author"}
           </span>
         </Link>
-
-        {isAuthor && (
-          <Badge className="text-xs" variant={"outline"}>
-            {article?.approveStatus.toUpperCase()}
-          </Badge>
-        )}
-        {article?.createdAt && (
-          <span className="text-sm text-zinc-700 dark:text-zinc-500">
-            {getArticleTime(article?.createdAt)}
-          </span>
-        )}
+        <div>
+          {isAuthor && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-zinc-700 dark:text-zinc-500">
+                Approve Status:
+              </span>
+              <span className="text-sm text-zinc-700 dark:text-zinc-300">
+                {article?.approveStatus
+                  ? article.approveStatus.charAt(0).toUpperCase() +
+                    article.approveStatus.slice(1)
+                  : ""}
+              </span>
+            </div>
+          )}
+          {article?.createdAt && (
+            <span className="text-sm text-zinc-700 dark:text-zinc-500">
+              {getArticleTime(article?.createdAt)}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Article Subtitle */}
@@ -80,6 +88,7 @@ const ArticleContent = ({
         }}
       /> */}
       <TooltipDialog content={article.content} />
+      <ShowBibliography bibliography={article.bibliography} />
     </div>
   );
 };
