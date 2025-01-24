@@ -18,6 +18,43 @@ const bookSchema = new mongoose.Schema({
   },
 });
 
+const authorProfileSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ["Law Student", "Lawyer", "Legal Professional"],
+    required: true,
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  year: {
+    type: Number,
+    required: false,
+  },
+  semester: {
+    type: Number,
+    required: false,
+  },
+  institution: {
+    type: String,
+    required: true,
+  },
+  course: {
+    type: String,
+    required: false,
+  },
+  designation: {
+    type: String,
+    required: false,
+  },
+  practising_at: {
+    type: String,
+    required: false,
+  },
+});
+
 const articleSchema = new mongoose.Schema(
   {
     title: {
@@ -45,6 +82,10 @@ const articleSchema = new mongoose.Schema(
       required: true,
     },
     views: {
+      type: Number,
+      default: 0,
+    },
+    shares: {
       type: Number,
       default: 0,
     },
@@ -88,6 +129,14 @@ const articleSchema = new mongoose.Schema(
         type: [String],
         default: [],
       },
+      cases: {
+        type: [String],
+        default: [],
+      },
+    },
+    authorProfile: {
+      type: authorProfileSchema,
+      required: true,
     },
   },
   { timestamps: true },

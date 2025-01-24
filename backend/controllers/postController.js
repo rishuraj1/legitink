@@ -20,17 +20,28 @@ const getPostsByUserId = async (req, res) => {
 
 const createNewArticle = async (req, res) => {
   try {
-    const { title, subtitle, content, mainImageUrl, userId, bibliography } =
-      req.body;
+    console.log(req.body);
+    const {
+      title,
+      subtitle,
+      content,
+      mainImageUrl,
+      userId,
+      bibliography,
+      authorProfile,
+    } = req.body;
     if (
       !title ||
       !subtitle ||
       !content ||
       !userId ||
-      (!bibliography?.urls?.length && !bibliography?.books?.length)
+      (!bibliography?.urls?.length && !bibliography?.books?.length) ||
+      !authorProfile
     ) {
       return res.status(400).json({ message: "Please fill in all fields" });
     }
+
+    const profile = { ...authorProfile, userId };
 
     await Article.create({
       title: title,
@@ -39,10 +50,12 @@ const createNewArticle = async (req, res) => {
       mainImage: mainImageUrl || "",
       author: userId,
       bibliography,
+      authorProfile: profile,
     });
 
     res.status(201).json({ message: "Article created successfully" });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -73,6 +86,23 @@ const incrementArticleViews = async (req, res) => {
     await article.save();
 
     res.status(200).json({ message: "Article views incremented" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const incrementShareCount = async (req, res) => {
+  try {
+    const { articleId } = req.params;
+    const article = await Article.findById(articleId);
+    if (!article) {
+      return res.status(404).json({ message: "Article not found" });
+    }
+
+    article.shares += 1;
+    await article.save();
+
+    res.status(200).json({ message: "Article shares incremented" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

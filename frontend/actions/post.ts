@@ -3,7 +3,7 @@
 import axios from "axios";
 
 import { auth } from "@/auth";
-import { Bibliography } from "@/types";
+import { Bibliography, CurrProfile } from "@/types";
 // import connectDb from "@/lib/db";
 // import { s3Client } from "@/lib/aws";
 
@@ -20,6 +20,7 @@ interface NewArticleProps {
   content: string;
   mainImage?: File | null;
   bibliography: Bibliography;
+  authorProfile: CurrProfile | null;
 }
 
 const createNewArticle = async ({
@@ -28,6 +29,7 @@ const createNewArticle = async ({
   content,
   mainImage,
   bibliography,
+  authorProfile,
 }: NewArticleProps) => {
   try {
     const user = await auth();
@@ -40,7 +42,8 @@ const createNewArticle = async ({
       !subtitle ||
       !content ||
       content === "<p></p>" ||
-      (!bibliography?.urls?.length && !bibliography?.books?.length)
+      (!bibliography?.urls?.length && !bibliography?.books?.length) ||
+      !authorProfile
     ) {
       throw new Error("All fields are required");
     }
@@ -61,11 +64,12 @@ const createNewArticle = async ({
       mainImageUrl,
       userId,
       bibliography,
+      authorProfile,
     };
 
     const response = await axios.post(
       `${baseAPIUrl}/api/v1/posts/create-post`,
-      data,
+      JSON.stringify(data),
       {
         headers: {
           "Content-Type": "application/json",

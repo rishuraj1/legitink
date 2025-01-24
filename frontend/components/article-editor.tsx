@@ -9,7 +9,8 @@ import RichTextEditor from "./editor/rich-text-editor";
 import { TermsDialog } from "./terms-dialog";
 import { createNewArticle } from "@/actions/post";
 import BibliographySection from "./editor/bibliography";
-import { Bibliography } from "@/types";
+import { Bibliography, CurrProfile } from "@/types";
+import AuthorProfile from "./author-profile";
 
 export default function ArticleEditor({
   params,
@@ -18,7 +19,6 @@ export default function ArticleEditor({
 }) {
   const { userId } = params;
 
-  // Use refs to track form fields
   const titleRef = useRef<HTMLInputElement>(null);
   const subtitleRef = useRef<HTMLInputElement>(null);
   const mainImageRef = useRef<HTMLInputElement>(null);
@@ -26,13 +26,15 @@ export default function ArticleEditor({
   const [bibliography, setBibliography] = useState<Bibliography>({
     books: [],
     urls: [],
+    cases: [],
   });
   const [content, setContent] = useState("");
   const [mainImage, setMainImage] = useState<File | null>(null);
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
+  const [selectProfile, setSelectProfile] = useState<string | null>("default");
   const [loading, setLoading] = useState(false);
+  const [authorProfile, setAuthorProfile] = useState<CurrProfile | null>(null);
 
-  // Handle content change in the rich text editor
   const handleContentChange = (newContent: string) => {
     setContent(newContent);
     console.log("Updated content:", newContent);
@@ -51,14 +53,12 @@ export default function ArticleEditor({
     setBibliography(newBibliography);
   };
 
-  // Handle form submission
   const handleSubmit = async () => {
     setLoading(true);
 
     const title = titleRef.current?.value || "";
     const subtitle = subtitleRef.current?.value || "";
     const mainImage = mainImageRef.current?.files?.[0];
-    // const bibliography = bibliographyRef.current?.value || "";
 
     if (
       !title ||
@@ -71,7 +71,14 @@ export default function ArticleEditor({
       return;
     }
 
-    const data = { title, subtitle, content, mainImage, bibliography };
+    const data = {
+      title,
+      subtitle,
+      content,
+      mainImage,
+      bibliography,
+      authorProfile,
+    };
     console.log("Data:", data);
     const toastId = toast.loading("Saving article...");
     const error = await createNewArticle(data);
@@ -84,13 +91,25 @@ export default function ArticleEditor({
     setLoading(false);
   };
 
+  const handleChangeProfile = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectProfile(e.target.value);
+    setAuthorProfile(null);
+  };
+
   const disabled =
     loading ||
     !content ||
     content === "<p></p>" ||
     !titleRef.current?.value?.trim() ||
     !subtitleRef.current?.value?.trim() ||
-    (!bibliography?.urls?.length && !bibliography?.books?.length);
+    (!bibliography?.urls?.length && !bibliography?.books?.length) ||
+    !authorProfile ||
+    authorProfile?.type === "default";
+
+  console.log("data => ", {
+    bibliography,
+    authorProfile,
+  });
 
   return (
     <form
@@ -101,34 +120,44 @@ export default function ArticleEditor({
         handleSubmit();
       }}
     >
-      <Input ref={titleRef} placeholder="Title" className="mb-2" />
-
-      {/* Subtitle Input */}
-      <Input ref={subtitleRef} placeholder="Subtitle" className="mb-4" />
-      <Input
-        ref={mainImageRef}
-        type="file"
-        accept="image/*"
-        className="mb-4"
-        onChange={(e) => setMainImage(e.target.files?.[0] ?? null)}
+      {/* Current designation/college/university/year */}
+      <AuthorProfile
+        authorProfile={authorProfile}
+        selectProfile={selectProfile}
+        handleChangeProfile={handleChangeProfile}
+        setAuthorProfile={setAuthorProfile}
       />
 
-      <div>
-        {mainImagePreview && (
-          <Image
-            src={mainImagePreview}
-            alt="Main Image"
-            className="h-56 w-72 object-cover dark:border-white border-zinc-500 border-2 rounded-md"
-            width={192}
-            height={100}
-          />
-        )}
+      <div className="flex flex-col gap-4 border-dashed border border-gray-200 dark:border-gray-700 p-6">
+        {/* Title Input */}
+        <Input ref={titleRef} placeholder="Title" className="mb-2" />
+
+        {/* Subtitle Input */}
+        <Input ref={subtitleRef} placeholder="Subtitle" className="mb-4" />
+        <Input
+          ref={mainImageRef}
+          type="file"
+          accept="image/*"
+          className="mb-4"
+          onChange={(e) => setMainImage(e.target.files?.[0] ?? null)}
+        />
+
+        <div>
+          {mainImagePreview && (
+            <Image
+              src={mainImagePreview}
+              alt="Main Image"
+              className="h-56 w-72 object-cover dark:border-white border-zinc-500 border-2 rounded-md"
+              width={192}
+              height={100}
+            />
+          )}
+        </div>
+
+        <RichTextEditor value={content} onChange={handleContentChange} />
       </div>
-
-      <RichTextEditor value={content} onChange={handleContentChange} />
-
       <div className="flex flex-col gap-4 mt-4  border-dashed border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold">Bibliography</h2>
+        <h2 className="text-lg leading-3 font-normal">Bibliography</h2>
         <BibliographySection onBibliographyChange={handleBibliographyChange} />
       </div>
 

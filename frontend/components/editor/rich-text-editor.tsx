@@ -114,7 +114,7 @@ const RichTextEditor = ({
   };
 
   return (
-    <div onPaste={handlePaste}>
+    <div onPaste={handlePaste} className="relative min-h-12">
       {editor ? <RichTextEditorToolbar editor={editor} /> : null}
       <EditorContent editor={editor} className="editor" />
     </div>
@@ -125,6 +125,7 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
   const [font, setFont] = React.useState<string | undefined>("Aa");
   const [isContextDialogOpen, setContextDialogOpen] = useState<boolean>(false);
   const [selectedText, setSelectedText] = useState<string | null>(null);
+  const [profile, setProfile] = useState<object | null>(null);
   const [context, setContext] = useState<string | null>(null);
 
   const handleFontFamilyChange = (value: string) => {

@@ -16,6 +16,7 @@ export interface Article {
   createdAt: string;
   updatedAt: string;
   bibliography: Bibliography;
+  authorProfile: CurrProfile;
 }
 
 export interface User {
@@ -64,4 +65,15 @@ export interface Book {
 export interface Bibliography {
   books?: Book[];
   urls?: string[];
+  cases?: string[];
+}
+
+export interface CurrProfile {
+  type: "Law Student" | "Lawyer" | "Legal Professional" | "default";
+  year?: number;
+  semester?: number;
+  institution?: string;
+  course?: string;
+  practisingAt?: string;
+  designation?: string;
 }

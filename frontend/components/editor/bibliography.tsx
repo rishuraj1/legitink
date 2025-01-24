@@ -12,6 +12,9 @@ const BibliographySection: React.FC<BibliographySectionProps> = ({
   onBibliographyChange,
 }) => {
   const [showBookInput, setShowBookInput] = useState<boolean>(false);
+  const [showCaseCitationInput, setShowCaseCitationInput] =
+    useState<boolean>(false);
+  const [caseCitation, setCaseCitation] = useState<string>("");
   const [bookTitle, setBookTitle] = useState<string>("");
   const [bookAuthor, setBookAuthor] = useState<string>("");
   const [bookYear, setBookYear] = useState<string>("");
@@ -19,6 +22,7 @@ const BibliographySection: React.FC<BibliographySectionProps> = ({
   const [books, setBooks] = useState<Book[]>([]);
   const [urls, setUrls] = useState<string[]>([]);
   const [urlInput, setUrlInput] = useState<string>("");
+  const [cases, setCases] = useState<string[]>([]);
 
   const handleAddBook = (): void => {
     if (bookTitle.trim() && bookAuthor.trim() && bookYear.trim()) {
@@ -35,11 +39,10 @@ const BibliographySection: React.FC<BibliographySectionProps> = ({
       setBookYear("");
       setIsbn("");
       setShowBookInput(false);
-      onBibliographyChange({ books: updatedBooks, urls });
+      onBibliographyChange({ books: updatedBooks, urls, cases });
     }
   };
 
-  // Rest of the handlers remain the same...
   const handleUrlInput = (e: ChangeEvent<HTMLInputElement>): void => {
     const value = e.target.value;
     if (value.endsWith(" ")) {
@@ -48,7 +51,7 @@ const BibliographySection: React.FC<BibliographySectionProps> = ({
         const updatedUrls = [...urls, url];
         setUrls(updatedUrls);
         setUrlInput("");
-        onBibliographyChange({ books, urls: updatedUrls });
+        onBibliographyChange({ books, urls: updatedUrls, cases });
       } else {
         setUrlInput("");
       }
@@ -69,13 +72,13 @@ const BibliographySection: React.FC<BibliographySectionProps> = ({
   const removeUrl = (urlToRemove: string): void => {
     const updatedUrls = urls.filter((url) => url !== urlToRemove);
     setUrls(updatedUrls);
-    onBibliographyChange({ books, urls: updatedUrls });
+    onBibliographyChange({ books, urls: updatedUrls, cases });
   };
 
   const removeBook = (bookIsbn: string): void => {
     const updatedBooks = books.filter((book) => book?.isbn !== bookIsbn);
     setBooks(updatedBooks);
-    onBibliographyChange({ books: updatedBooks, urls });
+    onBibliographyChange({ books: updatedBooks, urls, cases });
   };
 
   const handleBookTitleChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -96,10 +99,24 @@ const BibliographySection: React.FC<BibliographySectionProps> = ({
     setIsbn(value);
   };
 
+  const handleCaseCitationChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    setCaseCitation(e.target.value);
+  };
+
+  const handleAddCaseCitation = (): void => {
+    if (caseCitation.trim()) {
+      const updatedCases = [...cases, caseCitation.trim()];
+      setCases(updatedCases);
+      setCaseCitation("");
+      setShowCaseCitationInput(false);
+      onBibliographyChange({ books, urls, cases: updatedCases });
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-start gap-2">
           {!showBookInput && (
             <Button
               onClick={() => setShowBookInput(true)}
@@ -109,6 +126,17 @@ const BibliographySection: React.FC<BibliographySectionProps> = ({
               className="flex items-center gap-2"
             >
               <Plus className="h-4 w-4" /> Add Book
+            </Button>
+          )}
+          {!showCaseCitationInput && (
+            <Button
+              onClick={() => setShowCaseCitationInput(true)}
+              type="button"
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" /> Add Case Citation
             </Button>
           )}
         </div>
@@ -165,6 +193,36 @@ const BibliographySection: React.FC<BibliographySectionProps> = ({
           </div>
         )}
 
+        {showCaseCitationInput && (
+          <div className="space-y-2 bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+            <div className="flex gap-2 flex-wrap">
+              <Input
+                placeholder="Case Citation"
+                value={caseCitation}
+                onChange={handleCaseCitationChange}
+                className="flex-1 min-w-[200px]"
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                onClick={() => setShowCaseCitationInput(false)}
+                type="button"
+                variant="outline"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAddCaseCitation}
+                disabled={!caseCitation.trim()}
+                type="button"
+                className="flex items-center gap-2"
+              >
+                <Check className="h-4 w-4" /> Save Case Citation
+              </Button>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-wrap gap-2">
           {books.map((book) => (
             <div
@@ -187,7 +245,6 @@ const BibliographySection: React.FC<BibliographySectionProps> = ({
         </div>
       </div>
 
-      {/* URLs section remains the same */}
       <div className="space-y-2">
         <div className="relative">
           <div className="min-h-10 flex flex-wrap items-center gap-2 p-2 border rounded-md bg-background">
@@ -214,7 +271,7 @@ const BibliographySection: React.FC<BibliographySectionProps> = ({
               placeholder={
                 urls.length === 0 ? "Enter URLs (press space to add)" : ""
               }
-              className="flex-1 min-w-20 outline-none bg-transparent"
+              className="flex-1 min-w-20 outline-none bg-transparent text-sm"
             />
           </div>
         </div>
